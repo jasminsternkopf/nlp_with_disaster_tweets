@@ -10,8 +10,7 @@ from sklearn.svm import SVC
 from tqdm import tqdm
 
 from get_data import get_data
-from LSR_Classes import (LSIPLS, Centerer, LSR_Estimator, LSR_Transformer,
-                         Row_Normalizer)
+from LSR_Classes import LSIPLS, SIPLS, Centerer, Row_Normalizer
 
 
 def get_score_vector(Transformer, dim_featurespace, parameters=None):
@@ -20,18 +19,7 @@ def get_score_vector(Transformer, dim_featurespace, parameters=None):
     best_parameters = []
     classifier = SVC()
     use_cpus = multiprocessing.cpu_count() - 1
-    if Transformer == 'LSR_Transformer':
-        for i, no_of_features in enumerate(dim_featurespace):
-            X_train, y_train, X_test, y_test = get_data(3)
-            pipe = Pipeline([('Center', Centerer()), ('Transformer', LSR_Transformer(
-                no_of_features)), ('Normalizer', Row_Normalizer()), ('Classifier', classifier)])
-            pipe.fit(X_train, y_train)
-            y_pred = pipe.predict(X_test)
-            all_scores[i] = f1_score(y_pred, y_test)
-            y_pred_train = pipe.predict(X_train)
-            all_scores_train[i] = f1_score(y_pred_train, y_train)
-            print("LSR erledigt für Featureanzahl=", no_of_features)
-    elif Transformer == 'LSIPLS':
+    if Transformer == 'LSIPLS':
         for i, no_of_features in enumerate(tqdm(dim_featurespace)):
             X_train, y_train, X_test, y_test = get_data(3)
             pipe = Pipeline([('Center', Centerer()), ('Transformer', LSIPLS(
@@ -44,10 +32,10 @@ def get_score_vector(Transformer, dim_featurespace, parameters=None):
             all_scores_train[i] = f1_score(y_pred_train, y_train)
             best_parameters.append(grid_search.best_params_)
             print("LSIPLS erledigt für Featureanzahl=", no_of_features)
-    elif Transformer == 'LSR_Estimator':
+    elif Transformer == 'SIPLS':
         for i, no_of_features in enumerate(dim_featurespace):
             X_train, y_train, X_test, y_test = get_data(3)
-            pipe = Pipeline([('Center', Centerer()), ('LSR', LSR_Estimator(no_of_features))])
+            pipe = Pipeline([('Center', Centerer()), ('LSR', SIPLS(no_of_features))])
             pipe.fit(X_train, y_train)
             y_pred = pipe.predict(X_test)
             all_scores[i] = f1_score(y_pred, y_test)

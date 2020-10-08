@@ -52,12 +52,7 @@ with open("LSIPLS Scores Train", "rb") as LSIPLS_score_file_train:
 axes[0].plot(dim_featurespace, LSIPLS_score, label='LSIPLS mit SVC', color='r')
 axes[1].plot(dim_featurespace, LSIPLS_score_train, label='LSIPLS mit SVC', color='r')
 
-axes[0].set_ylabel('F1 Score der Testsdaten')
-axes[1].set_ylabel('F1 Score der Trainingsdaten')
-axes[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.2), fancybox=True, shadow=True, ncol=5)
-for i in range(2):
-    axes[i].set_xlabel('Dimension des Projektionsraums (*50 für LSI)', labelpad=1)
-    axes[i].set_xticks(dim_featurespace)
+
 
 plt.savefig("ergebnisse_train and test.pdf", bbox_inches='tight')
 plt.show()
