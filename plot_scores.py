@@ -22,8 +22,8 @@ def dump_pickle(file_name: str, data):
 def plot_test_and_train_in_axes(axes, transformer, test_score_file, train_score_file, label, color, dims, params_file=None, parameters_SVC=None, dim_multiplier=1):
     """
     Loads the saved test and training scores, if they exist, and the stored dimensions of the featurespace
-    For LSI, it is intended to pass the dim_multiplier - the number with which the entries in dims should be multiplied
-    If the files are empty or the lengths of the stored score vectors do not fit the lenght of the vector containing the desired dimensions, the scores will be freshly computed, stored and then plotted, otherwise the stored scores will be plotted
+    For LSI, it is intended to pass dim_multiplier - the number with which the entries in dims should be multiplied
+    If the files are empty or, in case of dimension reduction, the lengths of the stored score vectors do not fit the lenght of the vector containing the desired dimensions, the scores will be freshly computed, stored and then plotted, otherwise the stored scores will be plotted
     """
     test_score = open_pickle(test_score_file)
     train_score = open_pickle(train_score_file)

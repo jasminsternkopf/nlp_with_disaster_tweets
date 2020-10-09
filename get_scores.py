@@ -30,7 +30,7 @@ def get_score_vector(transformer, dim_featurespace, parameters=None):
             y_pred_train = grid_search.predict(X_train)
             all_scores_train[i] = f1_score(y_pred_train, y_train)
             best_parameters.append(grid_search.best_params_)
-            print("LSIPLS erledigt für Featureanzahl=", no_of_features)
+            print("LSIPLS done for number of features =", no_of_features)
     elif transformer == 'SIPLS':
         for i, no_of_features in enumerate(dim_featurespace):
             X_train, y_train, X_test, y_test = get_data(3)
@@ -40,7 +40,7 @@ def get_score_vector(transformer, dim_featurespace, parameters=None):
             all_scores[i] = f1_score(y_pred, y_test)
             y_pred_train = pipe.predict(X_train)
             all_scores_train[i] = f1_score(y_pred_train, y_train)
-            print("LSR erledigt für Featureanzahl=", no_of_features)
+            print("LSR done for number of features =", no_of_features)
     elif transformer == 'LSI':  # Transformer=='LSI'
         for i, no_of_features in enumerate(tqdm(dim_featurespace)):
             X_train, y_train, X_test, y_test = get_data(3)
@@ -53,7 +53,7 @@ def get_score_vector(transformer, dim_featurespace, parameters=None):
             y_pred_train = grid_search.predict(X_train)
             all_scores_train[i] = f1_score(y_pred_train, y_train)
             best_parameters.append(grid_search.best_params_)
-            print("LSI erledigt für Featureanzahl=", no_of_features)
+            print("LSI done for number of features =", no_of_features)
     else:  # Transformer=None, the baseline scenario
         X_train, y_train, X_test, y_test = get_data(3)
         pipe = Pipeline([('Center', Centerer()), ('Classifier', classifier)])
