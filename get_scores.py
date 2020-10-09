@@ -1,5 +1,4 @@
 import multiprocessing
-from typing import Dict, Optional, Tuple
 
 import numpy as np
 from sklearn.decomposition import TruncatedSVD
@@ -10,16 +9,16 @@ from sklearn.svm import SVC
 from tqdm import tqdm
 
 from get_data import get_data
-from LSR_Classes import LSIPLS, SIPLS, Centerer, Row_Normalizer
+from New_Classes import LSIPLS, SIPLS, Centerer, Row_Normalizer
 
 
-def get_score_vector(Transformer, dim_featurespace, parameters=None):
+def get_score_vector(transformer, dim_featurespace, parameters=None):
     all_scores = np.zeros(len(dim_featurespace))
     all_scores_train = np.zeros(len(dim_featurespace))
     best_parameters = []
     classifier = SVC()
     use_cpus = multiprocessing.cpu_count() - 1
-    if Transformer == 'LSIPLS':
+    if transformer == 'LSIPLS':
         for i, no_of_features in enumerate(tqdm(dim_featurespace)):
             X_train, y_train, X_test, y_test = get_data(3)
             pipe = Pipeline([('Center', Centerer()), ('Transformer', LSIPLS(
@@ -32,7 +31,7 @@ def get_score_vector(Transformer, dim_featurespace, parameters=None):
             all_scores_train[i] = f1_score(y_pred_train, y_train)
             best_parameters.append(grid_search.best_params_)
             print("LSIPLS erledigt für Featureanzahl=", no_of_features)
-    elif Transformer == 'SIPLS':
+    elif transformer == 'SIPLS':
         for i, no_of_features in enumerate(dim_featurespace):
             X_train, y_train, X_test, y_test = get_data(3)
             pipe = Pipeline([('Center', Centerer()), ('LSR', SIPLS(no_of_features))])
@@ -42,7 +41,7 @@ def get_score_vector(Transformer, dim_featurespace, parameters=None):
             y_pred_train = pipe.predict(X_train)
             all_scores_train[i] = f1_score(y_pred_train, y_train)
             print("LSR erledigt für Featureanzahl=", no_of_features)
-    else:  # Transformer=='LSI'
+    elif transformer == 'LSI':  # Transformer=='LSI'
         for i, no_of_features in enumerate(tqdm(dim_featurespace)):
             X_train, y_train, X_test, y_test = get_data(3)
             pipe = Pipeline([('Center', Centerer()), ('Transformer', TruncatedSVD(
@@ -55,7 +54,17 @@ def get_score_vector(Transformer, dim_featurespace, parameters=None):
             all_scores_train[i] = f1_score(y_pred_train, y_train)
             best_parameters.append(grid_search.best_params_)
             print("LSI erledigt für Featureanzahl=", no_of_features)
-    if Transformer == 'LSR_Estimator':
+    else:  # Transformer=None, the baseline scenario
+        X_train, y_train, X_test, y_test = get_data(3)
+        pipe = Pipeline([('Center', Centerer()), ('Classifier', classifier)])
+        grid_search = GridSearchCV(pipe, parameters, scoring='f1', n_jobs=use_cpus)
+        grid_search.fit(X_train, y_train)
+        y_pred = grid_search.predict(X_test)
+        all_scores = f1_score(y_pred, y_test)
+        y_pred_train = grid_search.predict(X_train)
+        all_scores_train = f1_score(y_pred_train, y_train)
+        best_parameters.append(grid_search.best_params_)
+    if transformer == 'SIPLS':
         return all_scores, all_scores_train, None
     else:
         return all_scores, all_scores_train, best_parameters
