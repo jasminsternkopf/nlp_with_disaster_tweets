@@ -7,6 +7,21 @@ Because the data should be centered (columns should have mean zero) and the rows
 """
 
 
+def LSIPLS_fit(X, y, no_of_latent_vars):
+    E = X
+    f = y - y.mean()
+    n = X.shape[1]
+    Xi = np.zeros((n, no_of_latent_vars))
+    for k in range(no_of_latent_vars):
+        Xi[:, k] = (E.T @ f) / np.linalg.norm(E.T @ f)
+        t = E @ Xi[:, k]
+        p = (E.T @ t) / np.inner(t, t)
+        q = np.inner(f, t) / np.inner(t, t)
+        E = E - np.outer(t, p)
+        f = f - q * t
+    return Xi
+
+
 class Centerer(TransformerMixin):
 
     def __init__(self):
@@ -85,18 +100,8 @@ class LSIPLS(TransformerMixin, BaseEstimator):
         self.no_of_latent_vars = no_of_latent_vars
 
     def fit(self, X, y):
-        E = X
-        f = y - y.mean()
-        n = X.shape[1]
-        Xi = np.zeros((n, self.no_of_latent_vars))
-        for k in range(self.no_of_latent_vars):
-            Xi[:, k] = (E.T @ f) / np.linalg.norm(E.T @ f)
-            t = E @ Xi[:, k]
-            p = (E.T @ t) / np.inner(t, t)
-            q = np.inner(f, t) / np.inner(t, t)
-            E = E - np.outer(t, p)
-            f = f - q * t
-        self.Xi = Xi
+        self.Xi = LSIPLS_fit(X, y, self.no_of_latent_vars)
+        return self
 
     def transform(self, X):
         return X @ self.Xi

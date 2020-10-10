@@ -9,7 +9,7 @@ from sklearn.svm import SVC
 from tqdm import tqdm
 
 from get_data import get_data
-from New_Classes import LSIPLS, SIPLS, Centerer, Row_Normalizer
+from new_classes import LSIPLS, SIPLS, Centerer, Row_Normalizer
 
 
 def get_score_vector(transformer, dim_featurespace, parameters=None):
@@ -34,7 +34,7 @@ def get_score_vector(transformer, dim_featurespace, parameters=None):
     elif transformer == 'SIPLS':
         for i, no_of_features in enumerate(dim_featurespace):
             X_train, y_train, X_test, y_test = get_data(3)
-            pipe = Pipeline([('Center', Centerer()), ('LSR', SIPLS(no_of_features))])
+            pipe = Pipeline([('Center', Centerer()), ('SIPLS', SIPLS(no_of_features))])
             pipe.fit(X_train, y_train)
             y_pred = pipe.predict(X_test)
             all_scores[i] = f1_score(y_pred, y_test)

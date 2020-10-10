@@ -4,7 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 
-from global_parameters import DATA_DIR
+from global_parameters import DATA_DIR, LSI_DIMENSION_MULTIPLIER, MAX_DIM
 from plot_scores import open_pickle
 
 
@@ -52,7 +52,7 @@ def print_test_train_with_params(testfile, trainfile, filename, paramsfile=None,
             dim_and_scores_df = pd.DataFrame(dim_and_scores, columns=[
                 'Dimension', 'Test score', 'Training score', 'C', 'Kernel'])
             print(dim_and_scores_df.to_string(index=False))
-            print(f"Best test score is {test[best_index]}, reached with dimension {dims[best_index]}, regularization parameter C = {params[best_index]['Classifier__C']} and kernel {params[best_index]['Classifier__kernel']}.")
+            print(f"Best test score is {test[best_index]}, reached with dimension {dims[best_index]}, regularization parameter C = {params[best_index]['Classifier__C']} and kernel = {params[best_index]['Classifier__kernel']}.")
             dim_and_scores_df.to_csv(filename, index=False)
 
 
@@ -66,7 +66,7 @@ def print_all_scores_with_params():
 
     print('\nLSI:\n')
     print_test_train_with_params(os.path.join(DATA_DIR, 'LSI Scores'), os.path.join(DATA_DIR, 'LSI Scores Train'), os.path.join(DATA_DIR, 'lsi_scores.csv'),
-                                 os.path.join(DATA_DIR, 'LSI Params'), range(50, 800, 50))
+                                 os.path.join(DATA_DIR, 'LSI Params'), range(LSI_DIMENSION_MULTIPLIER, MAX_DIM * LSI_DIMENSION_MULTIPLIER + LSI_DIMENSION_MULTIPLIER, LSI_DIMENSION_MULTIPLIER))
 
     print('\nSIPLS:\n')
     print_test_train_with_params(os.path.join(DATA_DIR, 'SIPLS Scores'), os.path.join(
